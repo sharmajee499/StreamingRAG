@@ -1,0 +1,10 @@
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "ratings_embedding",
+      "numDimensions": 768,
+      "similarity": "cosine"
+    }
+  ]
+}

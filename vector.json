@@ -1,0 +1,30 @@
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "ratings_embedding",
+      "numDimensions": 768,
+      "similarity": "cosine"
+    }
+  ]
+}
+
+
+db.ratingsEmbeddings.createSearchIndex(
+  "vector_index", 
+  "vectorSearch", 
+  {
+    "fields": [
+      {
+        "type": "vector",
+        "path": "ratings_embedding",
+        "numDimensions": 768,
+        "similarity": "cosine"
+      },
+      {
+        "type": "filter",
+        "path": "stars"
+      }
+    ]
+  }
+);
