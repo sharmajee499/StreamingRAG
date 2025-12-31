@@ -1,0 +1,114 @@
+<mxfile host="65bd71144e">
+    <diagram id="id90PCVotNlP2nD57qKd" name="Page-1">
+        <mxGraphModel dx="2172" dy="949" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="16" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Kafka Components&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;align=right;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="70" width="550" height="330" as="geometry">
+                        <mxRectangle x="320" y="300" width="140" height="30" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="20" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="16" source="18" target="19">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="Broker" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="16">
+                    <mxGeometry x="281" y="40" width="200" height="250" as="geometry">
+                        <mxRectangle x="180" y="40" width="140" height="30" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="22" value="ratings-embeddings" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;" vertex="1" parent="21">
+                    <mxGeometry x="37.5" y="160" width="125" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="ratings" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;" vertex="1" parent="21">
+                    <mxGeometry x="37.5" y="40" width="122.5" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="Connect Cluster" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="16">
+                    <mxGeometry x="60" y="40" width="200" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="Source Connector&lt;div&gt;&lt;b&gt;&amp;lt;source-ratings&amp;gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="27">
+                    <mxGeometry x="40" y="40" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="Sink Connector&lt;div&gt;&lt;b&gt;&amp;lt;mongo-sink-ratings-embeddings&amp;gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="27">
+                    <mxGeometry x="40" y="160" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="16" source="22" target="28">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="32" target="55">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="65" y="620"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="32" value="Mongo DB&lt;div&gt;Vector Store&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+                    <mxGeometry x="10" y="240" width="110" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" style="edgeStyle=none;html=1;entryX=0.982;entryY=0.393;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="28" target="32">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="Flink Cluster" style="swimlane;whiteSpace=wrap;html=1;startSize=23;align=right;" vertex="1" parent="1">
+                    <mxGeometry x="840" y="60" width="360" height="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="" style="edgeStyle=none;html=1;" edge="1" parent="35" source="36" target="37">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="Job Manager" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="35">
+                    <mxGeometry x="20" y="89" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" style="edgeStyle=none;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="35" source="37" target="41">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="Task Manager&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="35">
+                    <mxGeometry x="200" y="89" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="&lt;div&gt;ratings-embeddings-flinkJob.py&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="35">
+                    <mxGeometry x="130" y="224.5" width="175" height="31" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="19" target="36">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" style="edgeStyle=none;html=1;" edge="1" parent="1" source="41" target="22">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="Ollama" style="swimlane;whiteSpace=wrap;html=1;align=right;" vertex="1" parent="1">
+                    <mxGeometry x="840" y="480" width="340" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="nomic-embed-text" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="46">
+                    <mxGeometry x="128" y="40" width="180" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="smollm2:135m" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="46">
+                    <mxGeometry x="130" y="120" width="180" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" style="edgeStyle=none;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="41" target="47">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="52" style="edgeStyle=none;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="47" target="41">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" value="RAG App" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="235" y="550" width="480" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" value="Python App" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="54">
+                    <mxGeometry x="40" y="40" width="400" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="Output" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="285" y="738" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="56" value="Query&lt;div&gt;Input&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="554" y="738" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" style="edgeStyle=none;html=1;entryX=0.844;entryY=0.949;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="56" target="55">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="55" target="53">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" style="edgeStyle=none;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="55" target="62">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
