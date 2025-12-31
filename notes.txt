@@ -1,6 +1,0 @@
-# Mongo RAG Local
-https://www.mongodb.com/docs/atlas/atlas-vector-search/tutorials/local-rag/?language-no-interface=python&index-creation-method=driver
-
-
-# Mongo RAG workshop
-https://learn.mongodb.com/courses/rag-with-mongodb
