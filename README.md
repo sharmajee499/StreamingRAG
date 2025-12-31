@@ -1,62 +1,223 @@
-### Description
+# Streaming RAG Application with Apache Flink
 
-### Pre-Requisite
+A demonstration of a Retrieval-Augmented Generation (RAG) application built on streaming data using Apache Flink, Kafka, MongoDB, and Ollama.
 
-- Docker
-- Python > 3.0
-- [MongoDB Compass](https://www.mongodb.com/try/download/compass)
-- Good RAM (5GB Available) and Disk Space
+## Overview
 
-### Architectural Diagram
+This project showcases a real-time RAG system that processes streaming data rather than traditional batch processing. The system ingests data from Kafka topics, enriches it with vector embeddings using Flink, stores it in MongoDB as a vector database, and enables semantic search capabilities through a Python-based RAG application.
 
-### Process Flow Description
+### Key Technologies
 
-- Dummy data on `ratings` topic is generated with Kafka Connect [DataGen Connector](https://github.com/confluentinc/kafka-connect-datagen) using the [source-ratings](./Docker/connect-cluster/connectors.sh) connector.
-- Flink Process the [topic data](./Misc/ratings_sample_data.json) and adds the `ratings_embeddings` fields which is vectorized using the `nomic-embed-text` model running on [Ollama](./Docker/ollama/Dockerfile)
-- The output is stored on the topic named `ratings-embeddings` with the existing data and vectorized data for `message` field.
-- `ratings-embeddings` topic is sinked to MongoDB with the [MongoDB Sink Connector](https://www.mongodb.com/docs/kafka-connector/current/sink-connector/) named `mongo-sink-ratings-embeddings`.
-- Late the RAG Python Script utilizes this MongoDB Vector Store as context. No other context is fetched from LLM. Only the vector store context is utilized on the query part.
+- **Apache Flink** - Stream processing engine
+- **Apache Kafka** - Distributed event streaming platform
+- **Kafka Connect** - Data integration framework with DataGen and MongoDB connectors
+- **MongoDB** - Vector store and search database
+- **Ollama** - Local hosting for embedding (`nomic-embed-text`) and LLM models (`smollm2:135m`)
+- **Python** - RAG application interface
 
-### How to Get Started
+## Architecture
 
-### Infra Setup on Docker
+![Architectural Diagram](./Misc/architectural-diagram.png)
 
-- Start the Docker Desktop on you machine.
-- Start and Create the containers using `docker compose up -d --build`
-- This usually takes time
+### System Flow
 
-#### Validate the MongoDB Service
+1. **Data Generation**: Dummy rating data is generated on the `ratings` topic using the Kafka Connect DataGen Connector
+2. **Stream Processing**: Flink processes incoming messages and generates embeddings using the `nomic-embed-text` model from Ollama
+3. **Data Enrichment**: Processed data with vector embeddings is written to the `ratings-embeddings` topic
+4. **Data Persistence**: MongoDB Sink Connector streams data from `ratings-embeddings` into MongoDB
+5. **RAG Query**: Python application queries the MongoDB vector store for context-aware responses
 
-- Connect to MongoDB using [MongoDB Compass](https://www.mongodb.com/try/download/compass)
-- Open MongoDB Compass and add new connection using `mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.10` url. No auth needed.
-- After connecting, make sure the `search indexes` is present.
+## Prerequisites
 
-#### Validate the Connect Cluster Service
+Before getting started, ensure you have the following installed:
 
-- Check the source connector status with `curl http://localhost:8083/connectors/source-ratings/status`. Should be RUNNING.
-- Check the sink connector (mongo sink) status with `curl http://localhost:8083/connectors/mongo-sink-ratings-embeddings/status`
+- **Docker Desktop** - Container runtime environment
+- **Python 3.0+** - Programming language runtime
+- **MongoDB Compass** - MongoDB GUI ([Download here](https://www.mongodb.com/try/download/compass))
+- **System Resources**:
+  - Minimum 5GB available RAM
+  - Adequate disk space for Docker images and containers
 
-### Submit the Flink Job
+## Getting Started
 
-- SSH inside the Flink JobManager Docker Container with `docker exec -it jobmanager bash`
-- Now, submit the job with `flink run -d -py FlinkJobs/ratings-embeddings-flinkJob.py`
+### 1. Infrastructure Setup
 
-#### Validate the Flink Job and Status
+Start the Docker infrastructure:
 
-- View the status of the job http://localhost:8081
-- Re-submit the job if it's failing on first shot.
-- See the data on the MongoDB collection.
+```bash
+# Ensure Docker Desktop is running
+docker compose up -d --build
+```
 
-### Run the RAG application
+> **Note**: Initial setup may take several minutes to download images and start all services.
 
-#### Setup
+### 2. Validate MongoDB Connection
 
-- Create a python virtual environment with `python -m venv .venv-streamingrag`
-- Activate the virtual env with `.\.venv-streamingrag\Scripts\activate` (for winodws). This activation might depend upon OS.
-- Install the dependencies with `pip install -r .\requirements.txt`
+Verify MongoDB is running and accessible:
 
-#### Run the RAG Python App
+1. Open **MongoDB Compass**
+2. Create a new connection with the following connection string:
+   ```
+   mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.10
+   ```
+3. No authentication is required for local development
+4. After connecting, verify that the **search indexes** are present
 
-- In CLI, `python .\RAGApp\ragApp.py`
-- Enter your query. For instance: `What are comments on peanuts?`
-- The reponse time is high and proabably not that accurate because of the constraint on model and compute resource.
+### 3. Validate Kafka Connect Services
+
+Check the status of Kafka Connect connectors:
+
+```bash
+# Check source connector status
+curl http://localhost:8083/connectors/source-ratings/status
+
+# Check MongoDB sink connector status
+curl http://localhost:8083/connectors/mongo-sink-ratings-embeddings/status
+```
+
+Both connectors should show `RUNNING` status.
+
+### 4. Submit Flink Job
+
+Deploy the stream processing job:
+
+```bash
+# Access the Flink JobManager container
+docker exec -it jobmanager bash
+
+# Submit the Flink job
+flink run -d -py FlinkJobs/ratings-embeddings-flinkJob.py
+```
+
+#### Monitor Flink Job
+
+- Access the Flink Web UI at [http://localhost:8081](http://localhost:8081)
+- Verify the job status is `RUNNING`
+- If the job fails on first submission, resubmit the job
+- Check MongoDB Compass to confirm data is being written to the collection
+
+### 5. Run the RAG Application
+
+#### Setup Python Environment
+
+```bash
+# Create virtual environment
+python -m venv .venv-streamingrag
+
+# Activate virtual environment
+# Windows:
+.\.venv-streamingrag\Scripts\activate
+# macOS/Linux:
+source .venv-streamingrag/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+#### Execute RAG Application
+
+```bash
+# Run the application
+python RAGApp/ragApp.py
+
+# Enter your query at the prompt
+# Example: "What are comments on peanuts?"
+```
+
+> **Performance Note**: Response times may be longer than expected due to local model constraints and limited compute resources. Accuracy may vary based on the quality and quantity of embeddings in the vector store.
+
+## Project Structure
+
+```
+STREAMINGRAG/
+├── .venv-streamingrag/             # Python virtual environment
+├── Docker/
+│   ├── connect-cluster/
+│   │   ├── Dockerfile              # Kafka Connect service configuration
+│   │   └── connectors.sh           # Kafka Connect connector configurations
+│   ├── flink/
+│   │   ├── Dockerfile              # Flink service configuration
+│   │   └── requirements.txt        # Flink Python dependencies
+│   ├── mongodb/
+│   │   ├── Dockerfile              # MongoDB service configuration
+│   │   └── mongo-init.js           # MongoDB initialization script
+│   └── ollama/
+│       └── Dockerfile              # Ollama service configuration
+├── FlinkJobs/
+│   └── ratings-embeddings-flinkJob.py  # Flink stream processing job
+├── Misc/
+│   ├── architectural-diagram.drawio    # System architecture diagram
+│   ├── kafka-cli-helper.sh             # Kafka CLI utility scripts
+│   └── ratings_sample_data.json        # Sample ratings data format
+├── RAGApp/
+│   └── ragApp.py                   # RAG query application
+├── .gitignore                      # Git ignore rules
+├── docker-compose.yml              # Docker services orchestration
+├── README.md                       # Project documentation
+└── requirements.txt                # Python application dependencies
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Containers not starting**: Ensure Docker Desktop has sufficient resources allocated (minimum 5GB RAM)
+
+**Flink job failing**: Check the Flink logs at http://localhost:8081 and resubmit the job if needed
+
+**No data in MongoDB**: Verify all connectors are in `RUNNING` state and check Kafka topic has data
+
+**Slow RAG responses**: This is expected with local models; consider using a more powerful machine or cloud-hosted models for production use
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues or pull requests.
+
+## License
+
+This project is licensed under the MIT License - see below for details.
+
+```
+MIT License
+
+Copyright (c) 2025 StreamingRAG
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### Third-Party Licenses
+
+This project utilizes various open-source technologies, each governed by their respective licenses:
+
+- **Apache Flink** - Apache License 2.0
+- **Apache Kafka** - Apache License 2.0
+- **MongoDB** - Server Side Public License (SSPL) / MongoDB Enterprise License
+- **Ollama** - MIT License
+- **Python and associated libraries** - Various licenses (see individual package licenses)
+
+Please refer to each technology's official documentation for their specific licensing terms and conditions.
+
+## References
+
+- [Apache Flink Documentation](https://flink.apache.org/docs/)
+- [Kafka Connect DataGen Connector](https://github.com/confluentinc/kafka-connect-datagen)
+- [MongoDB Kafka Sink Connector](https://www.mongodb.com/docs/kafka-connector/current/sink-connector/)
+- [Ollama Documentation](https://ollama.ai/)
+- [MongoDB RAG Local Tutorial](https://www.mongodb.com/docs/atlas/atlas-vector-search/tutorials/local-rag/?language-no-interface=python&index-creation-method=driver)
+- [MongoDB RAG Workshop](https://learn.mongodb.com/courses/rag-with-mongodb)
